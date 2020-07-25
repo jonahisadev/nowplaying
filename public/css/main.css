@@ -1,4 +1,9 @@
+body, html {
+    height: 100%;
+}
+
 body {
+    margin: 0;
     background-color: #2B303B;
     color: #EFEFEF;
     font-family: Arial, Helvetica, sans-serif;
@@ -6,6 +11,11 @@ body {
 
 a {
     color: #EFEFEF;
+}
+
+.container h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 .container {

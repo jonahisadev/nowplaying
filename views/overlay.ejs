@@ -5,33 +5,52 @@
 </style>
 
 <input type="hidden" id="id" value="<%= user._id %>">
-<canvas id="display" width="1920" height="50">
+<canvas id="display" height="50">
     Unfortunately, your streaming software can't render the overlay!
 </canvas>
 
 <script>
+    const DEMO = <%= demo %>;
+
     // Init
     var canvas = document.getElementById('display');
     var context = canvas.getContext('2d');
     var text = "Now Playing: ";
+    canvas.width = window.innerWidth;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    // Font size
+    var size = 50;
+
+    // Variables
+    var opacity = <%= user.o_opacity %> / 100;
+    var outline = <%= user.o_outline %>;
+    var color = "<%= user.o_color %>";
 
     // Render
     function render()
     {
         // Clear
-        context.clearRect(0, 0, width, height);
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Set background
-        context.fillStyle = '#00ff00';
-        context.fillRect(0, 0, width, height);
+        // Make sure we fit
+        context.font = `bold ${size}px arial`;
+        var txt_width = context.measureText(text).width;
+        while (txt_width > canvas.width) {
+            size--;
+            txt_width = context.measureText(text).width;
+            context.font = `bold ${size}px arial`;
+        }
 
         // Write text
-        context.fillStyle = 'white';
-        context.font = '50px Arial';
-        context.fillText(text, 2, 38);
+        context.fillStyle = `rgba(${color}, ${opacity})`;
+        context.fillText(text, (canvas.width / 2) - (txt_width / 2), 38);
+
+        // Outline
+        if (outline) {
+            context.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
+            context.lineWidth = 2;
+            context.strokeText(text, (canvas.width / 2) - (txt_width / 2), 38);
+        }
 
         // Render
         window.requestAnimationFrame(render);
@@ -40,16 +59,20 @@
     // Check now playing
     function check_now_playing()
     {
-        fetch('http://localhost:3000/nowplaying?id=' + document.getElementById('id').value)
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) {
-                console.log("Error: " + data.error);
-                return;
-            }
+        if (!DEMO) {
+            fetch('http://localhost:3000/nowplaying?id=' + document.getElementById('id').value)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    console.log("Error: " + data.error);
+                    return;
+                }
 
-            text = "Now Playing: " + data.str;
-        });
+                if (size != 50)
+                    size = 50;
+                text = "Now Playing: " + data.str;
+            });
+        }
     }
 
     // Init call
@@ -60,5 +83,10 @@
 
     // Call render
     window.requestAnimationFrame(render);
+
+    // Stay the same
+    window.onresize = (e) => {
+        canvas.width = window.innerWidth;
+    }
 
 </script>

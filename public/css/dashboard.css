@@ -1,0 +1,75 @@
+.container {
+    height: 50%;
+    padding-top: 10px;
+}
+
+.container input[type="text"] {
+    width: 50%;
+    font-size: 14pt;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.container input[type="text"]:focus {
+    outline: none;
+}
+
+.overlay-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: #EFEFEF;
+    color: #2B303B;
+    width: 60%;
+    margin-left: 20%;
+    border-radius: 10px;
+    height: 100%;
+    margin-top: 20px;
+}
+
+.overlay-container a {
+    color: #2B303B;
+}
+
+.settings {
+    position: relative;
+    border-right: 2px solid #CCC;
+}
+
+.settings p {
+    margin-bottom: 5px;
+    margin-top: 30px;
+}
+
+.settings #save {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translate(-50%, 0);
+    font-size: 16pt;
+}
+
+.preview {
+    position: relative;
+}
+
+.preview iframe {
+    background-color: gray;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.preview h5 {
+    font-weight: normal;
+    font-style: italic;
+}
+
+.settings-container input {
+    width: 80%;
+}
+
+#copy-link {
+    font-size: 16pt;
+}

@@ -6,11 +6,88 @@
     <title>Dashboard</title>
 
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
     <div class="container">
         <h1>Dashboard</h1>
-        <a href="/overlay?id=<%= user._id %>">Overlay link</a>
+        
+        <input type="text" value="http://localhost:3000/overlay?id=<%= user._id %>" id="link">
+        <a href="#" id="copy-link">Select Overlay Link</a>
+
+        <div class="overlay-container">
+            <div class="settings">
+                <h3>Overlay Settings</h3>
+                <div class="settings-container">
+                    <p>Text Color</p>
+                    <input type="color" name="color" id="color" value="<%= user.o_hex %>" />
+                    <p>Opacity</p>
+                    <input type="range" name="opacity" id="opacity" min="0" max="100" value="<%= user.o_opacity %>" />
+                    <p>Outline</p>
+                    <input type="checkbox" name="outline" id="outline" <% if (user.o_outline) { %>checked<% } %>/>
+                </div>
+                <a href="#" id="save" onclick="save()">Save</a>
+            </div>
+            <div class="preview">
+                <h3>Preview</h3>
+                <h5>Gray background not present in live overlay</h5>
+                <iframe src="/overlay?id=<%= user._id %>&demo=true" id="preview" frameborder="0" height="50"></iframe>
+            </div>
+        </div>
     </div>
+
+    <script>
+        var link = document.getElementById('link')
+        var preview = document.getElementById('preview');
+
+        document.getElementById('copy-link').onclick = (e) => {
+            link.select();
+            link.setSelectionRange(0, 999999);
+        };
+
+        document.getElementById('opacity').oninput = (e) => {
+            const val = document.getElementById('opacity').value;
+            preview.contentWindow.opacity = val / 100;
+        };
+
+        document.getElementById('outline').oninput = (e) => {
+            const val = document.getElementById('outline').checked;
+            preview.contentWindow.outline = val;
+        };
+
+        document.getElementById('color').oninput = (e) => {
+            const html_val = document.getElementById('color').value;
+            preview.contentWindow.color = hex_to_rgb(html_val);
+        };
+
+        function hex_to_rgb(val)
+        {
+            var hex_r = parseInt(val.charAt(1) + val.charAt(2), 16);
+            var hex_g = parseInt(val.charAt(3) + val.charAt(4), 16);
+            var hex_b = parseInt(val.charAt(5) + val.charAt(6), 16);
+
+            return hex_r + "," + hex_g + "," + hex_b;
+        }
+
+        function save()
+        {
+            fetch('/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    opacity: document.getElementById('opacity').value,
+                    outline: document.getElementById('outline').checked,
+                    color: hex_to_rgb(document.getElementById('color').value),
+                    hex: document.getElementById('color').value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data.msg);
+            });
+        }
+    </script>
 </body>
 </html>

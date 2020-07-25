@@ -60,7 +60,7 @@ module.exports.nowPlaying = async (code) => {
         
         var str = "";
         const item = data.body.item;
-        str += item.name + " - ";
+        str += item.name + " by ";
         for (var i = 0; i < item.artists.length; i++) {
             str += item.artists[i].name;
             if (i != item.artists.length - 1)
