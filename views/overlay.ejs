@@ -1,0 +1,64 @@
+<style>
+    body, html {
+        margin: 0;
+    }
+</style>
+
+<input type="hidden" id="id" value="<%= user._id %>">
+<canvas id="display" width="1920" height="50">
+    Unfortunately, your streaming software can't render the overlay!
+</canvas>
+
+<script>
+    // Init
+    var canvas = document.getElementById('display');
+    var context = canvas.getContext('2d');
+    var text = "Now Playing: ";
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Render
+    function render()
+    {
+        // Clear
+        context.clearRect(0, 0, width, height);
+
+        // Set background
+        context.fillStyle = '#00ff00';
+        context.fillRect(0, 0, width, height);
+
+        // Write text
+        context.fillStyle = 'white';
+        context.font = '50px Arial';
+        context.fillText(text, 2, 38);
+
+        // Render
+        window.requestAnimationFrame(render);
+    }
+
+    // Check now playing
+    function check_now_playing()
+    {
+        fetch('http://localhost:3000/nowplaying?id=' + document.getElementById('id').value)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.log("Error: " + data.error);
+                return;
+            }
+
+            text = "Now Playing: " + data.str;
+        });
+    }
+
+    // Init call
+    check_now_playing();
+
+    // Check every 5 seconds
+    setInterval(check_now_playing, 1000 * 5);
+
+    // Call render
+    window.requestAnimationFrame(render);
+
+</script>

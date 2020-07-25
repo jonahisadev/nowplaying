@@ -1,0 +1,5 @@
+{
+    "client_id": "d1f196f193b14252b05eef4860b30c19",
+    "client_secret": "bc25dd996707486caba9654ada53b291",
+    "callback": "http://localhost:3000/callback"
+}
