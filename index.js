@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const spotify = require('./spotify');
@@ -40,6 +41,11 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+});
+
 app.get('/callback', async (req, res) => {
     const tokens = await spotify.authorize(req.query['code']);
     const email = await spotify.getEmail(tokens.access_token);
@@ -78,6 +84,17 @@ app.get('/dashboard', async (req, res) => {
     });
 });
 
+app.get('/tutorial/:platform', (req, res) => {
+    const name = `tut_${req.params['platform']}`;
+
+    if (fs.existsSync(path.join(__dirname, 'views', name + '.ejs'))) {
+        res.render(name);
+        return;
+    }
+
+    res.redirect('/');
+});
+
 app.get('/overlay', (req, res) => {
     if (!req.query['id']) {
         res.redirect('/');
@@ -105,6 +122,22 @@ app.get('/nowplaying', async (req, res) => {
             return;
         }
 
+        // Access token breaks in a minute, refresh
+        if (new Date(user.sp_expires + (60 * 1000)) < Date.now()) {
+            console.log("Attempting refresh...");
+            // Get tokens
+            const tokens = await spotify.refresh(user.sp_access, user.sp_refresh);
+
+            // Update
+            user.sp_access = tokens.access_token;
+            user.sp_expires = new Date(Date.now() + (tokens.expires * 1000));
+
+            // Save
+            await user.save({});
+            req.session['login_user'] = user;
+        }
+
+        // Get string
         const str = await spotify.nowPlaying(user.sp_access);
         res.json({str: str});
     });

@@ -1,6 +1,6 @@
 .login {
     background-color: #EFEFEF;
-    color: #2B303B;
+    color: #191414;
     width: 30%;
     margin-left: 35%;
     padding: 10px;
@@ -8,10 +8,15 @@
     box-sizing: border-box;
 }
 
-.login h3 {
-    margin-top: 0px;
+a.spotify {
+    color: white;
+    background-color: #1DB954;
+    font-size: 16pt;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 20px;
 }
 
-.login a {
-    color: #2B303B;
+h2 {
+    margin-bottom: 30px;
 }

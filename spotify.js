@@ -16,7 +16,7 @@ const scopes = [
 
 module.exports.getAuthURL = () => {
     return API.createAuthorizeURL(scopes, 'spotify');
-}
+};
 
 module.exports.authorize = async (code) => {
     return API.authorizationCodeGrant(code).then(data => {
@@ -30,7 +30,28 @@ module.exports.authorize = async (code) => {
             error: err
         };
     });
-}
+};
+
+module.exports.refresh = async (code, re) => {
+    const api = new Spotify({
+        clientId: API.getClientId(),
+        clientSecret: API.getClientSecret(),
+        accessToken: code,
+        refreshToken: re
+    });
+
+    return api.refreshAccessToken().then(async data => {
+        console.log(data.body);
+        return {
+            access_token: data.body['access_token'],
+            refresh_token: data.body['refresh_token'],
+            expires: data.body['expires_in']
+        };
+    }, err => {
+        console.log("Error: " + err);
+        return {};
+    });
+};
 
 module.exports.getEmail = async (code) => {
     const api = new Spotify({
@@ -45,7 +66,7 @@ module.exports.getEmail = async (code) => {
         console.log(err);
         return "Error";
     });
-}
+};
 
 module.exports.nowPlaying = async (code) => {
     const api = new Spotify({
@@ -68,4 +89,4 @@ module.exports.nowPlaying = async (code) => {
         }
         return str;
     });
-}
+};

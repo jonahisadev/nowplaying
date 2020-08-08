@@ -1,6 +1,8 @@
 .container {
     height: 50%;
     padding-top: 10px;
+    width: 60%;
+    margin-left: 20%;
 }
 
 .container input[type="text"] {
@@ -19,16 +21,16 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     background-color: #EFEFEF;
-    color: #2B303B;
-    width: 60%;
-    margin-left: 20%;
+    color: #191414;
+    width: 100%;
     border-radius: 10px;
     height: 100%;
     margin-top: 20px;
+    margin-bottom: 15px;
 }
 
 .overlay-container a {
-    color: #2B303B;
+    color: #191414;
 }
 
 .settings {
@@ -72,4 +74,20 @@
 
 #copy-link {
     font-size: 16pt;
+}
+
+.input-label {
+    margin-right: 15px;
+    font-size: 14pt;
+    align-self: center;
+}
+
+#link {
+    flex: 2;
+    box-sizing: border-box;
+}
+
+.link-stuff {
+    display: flex;
+    width: 100%;
 }

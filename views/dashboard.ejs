@@ -12,8 +12,13 @@
     <div class="container">
         <h1>Dashboard</h1>
         
-        <input type="text" value="http://localhost:3000/overlay?id=<%= user._id %>" id="link">
-        <a href="#" id="copy-link">Select Overlay Link</a>
+        <p>
+            How do I use this with <a target="_blank" href="/tutorial/obs">OBS</a>?
+        </p>
+        <div class="link-stuff">
+            <span class="input-label">Overlay Link: </span>
+            <input type="text" value="http://localhost:3000/overlay?id=<%= user._id %>" id="link">
+        </div>
 
         <div class="overlay-container">
             <div class="settings">
@@ -34,17 +39,11 @@
                 <iframe src="/overlay?id=<%= user._id %>&demo=true" id="preview" frameborder="0" height="50"></iframe>
             </div>
         </div>
+
+        <a href="/logout">Logout</a>
     </div>
 
     <script>
-        var link = document.getElementById('link')
-        var preview = document.getElementById('preview');
-
-        document.getElementById('copy-link').onclick = (e) => {
-            link.select();
-            link.setSelectionRange(0, 999999);
-        };
-
         document.getElementById('opacity').oninput = (e) => {
             const val = document.getElementById('opacity').value;
             preview.contentWindow.opacity = val / 100;
