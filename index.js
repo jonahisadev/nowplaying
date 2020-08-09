@@ -19,7 +19,7 @@ app.engine('ejs', ejs.renderFile);
 
 const db = require('./db');
 
-app.use(helmet());
+// app.use(helmet());
 app.use(session({
     secret: 'woiefghwioegb',
     resave: true,
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
         res.redirect('/dashboard');
         return;
     }
-
+    
     res.render('land', {
         spotify: spotify.getAuthURL()
     });
@@ -51,7 +51,7 @@ app.get('/logout', (req, res) => {
 app.get('/callback', async (req, res) => {
     const tokens = await spotify.authorize(req.query['code']);
     const email = await spotify.getEmail(tokens.access_token);
-
+    
     User.findOne({email: email}).then(user => {
         if (!user) {
             user = new User();
@@ -61,11 +61,11 @@ app.get('/callback', async (req, res) => {
             user.o_color = "255,255,255";
             user.o_hex = "#ffffff";
         }
-
+        
         user.sp_access = tokens.access_token;
         user.sp_refresh = tokens.refresh_token;
         user.sp_expires = new Date(Date.now() + tokens.expires * 1000);
-
+        
         user.save({}).then(_ => {
             req.session['login_user'] = user;
             res.redirect('/dashboard');
@@ -78,7 +78,7 @@ app.get('/dashboard', async (req, res) => {
         res.redirect('/');
         return;
     }
-
+    
     res.render('dashboard', {
         user: req.session['login_user']
     });
@@ -86,12 +86,12 @@ app.get('/dashboard', async (req, res) => {
 
 app.get('/tutorial/:platform', (req, res) => {
     const name = `tut_${req.params['platform']}`;
-
+    
     if (fs.existsSync(path.join(__dirname, 'views', name + '.ejs'))) {
         res.render(name);
         return;
     }
-
+    
     res.redirect('/');
 });
 
@@ -100,7 +100,7 @@ app.get('/overlay', (req, res) => {
         res.redirect('/');
         return;
     }
-
+    
     User.findById(req.query['id']).then(user => {
         res.render('overlay', {
             user: user,
@@ -110,18 +110,19 @@ app.get('/overlay', (req, res) => {
 });
 
 // Returns JSON
+app.use(express.json());
 app.get('/nowplaying', async (req, res) => {
     if (!req.query['id']) {
         res.json({error: "No ID given"});
         return;
     }
-
+    
     User.findById(req.query['id']).then(async user => {
         if (!user) {
             res.json({error: "No such user"});
             return;
         }
-
+        
         // Access token breaks in a minute, refresh
         if (new Date(user.sp_expires + (60 * 1000)) < Date.now()) {
             console.log("Attempting refresh...");
@@ -144,7 +145,6 @@ app.get('/nowplaying', async (req, res) => {
 });
 
 // Expects JSON body
-app.use(express.json());
 app.post('/save', (req, res) => {
     User.findById(req.session['login_user']._id).then(user => {
         user.o_opacity = req.body['opacity'];

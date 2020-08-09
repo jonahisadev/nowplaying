@@ -11,6 +11,9 @@
 
 <script>
     const DEMO = <%= demo %>;
+    var opacity = <%= user.o_opacity %> / 100;
+    var outline = <%= user.o_outline %>;
+    var color = "<%= user.o_color %>";
 
     // Init
     var canvas = document.getElementById('display');
@@ -20,11 +23,6 @@
 
     // Font size
     var size = 50;
-
-    // Variables
-    var opacity = <%= user.o_opacity %> / 100;
-    var outline = <%= user.o_outline %>;
-    var color = "<%= user.o_color %>";
 
     // Render
     function render()
