@@ -5,10 +5,13 @@ const spotify = require('./spotify');
 const User = require('./user');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const express = require('express');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
 // Views
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -16,19 +19,18 @@ app.engine('ejs', ejs.renderFile);
 
 const db = require('./db');
 
-app.set('trust proxy', 1);
+app.use(helmet());
 app.use(session({
     secret: 'woiefghwioegb',
     resave: true,
     saveUninitialized: true,
     cookie: {
-        secure: false,
         expires: new Date(Date.now() + (1000 * 60 * 60))
     },
     store: new MongoStore({mongooseConnection: db.connection})
 }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
 
 app.get('/', (req, res) => {
     if (req.session['login_user']) {
@@ -142,6 +144,7 @@ app.get('/nowplaying', async (req, res) => {
 });
 
 // Expects JSON body
+app.use(express.json());
 app.post('/save', (req, res) => {
     User.findById(req.session['login_user']._id).then(user => {
         user.o_opacity = req.body['opacity'];
