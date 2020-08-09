@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get('/', (req, res) => {
-    if (!req.session['login']) {
+    if (req.session['login']) {
         res.redirect('/dashboard');
         return;
     }
