@@ -54,17 +54,15 @@ app.get('/callback', async (req, res) => {
         if (!user) {
             user = new User();
             user.email = email;
+            user.o_opacity = 100;
+            user.o_outline = true;
+            user.o_color = "255,255,255";
+            user.o_hex = "#ffffff";
         }
 
         user.sp_access = tokens.access_token;
         user.sp_refresh = tokens.refresh_token;
         user.sp_expires = new Date(Date.now() + tokens.expires * 1000);
-
-        // Defaults
-        user.o_opacity = 100;
-        user.o_outline = true;
-        user.o_color = "255,255,255";
-        user.o_hex = "#ffffff";
 
         user.save({}).then(_ => {
             req.session['login_user'] = user;
