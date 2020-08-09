@@ -68,6 +68,7 @@ app.get('/callback', async (req, res) => {
         
         user.save({}).then(_ => {
             req.session['login_user'] = user;
+            console.log(req.session);
             res.redirect('/dashboard');
         });
     });
