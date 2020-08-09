@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get('/', (req, res) => {
-    if (req.session['login_user']) {
+    if (!req.session['login']) {
         res.redirect('/dashboard');
         return;
     }
@@ -67,6 +67,7 @@ app.get('/callback', async (req, res) => {
         user.sp_expires = new Date(Date.now() + tokens.expires * 1000);
         
         user.save({}).then(_ => {
+            req.session['login'] = true;
             req.session['login_user'] = user;
             console.log(req.session);
             res.redirect('/dashboard');
@@ -75,7 +76,7 @@ app.get('/callback', async (req, res) => {
 });
 
 app.get('/dashboard', async (req, res) => {
-    if (!req.session['login_user']) {
+    if (!req.session['login']) {
         res.redirect('/');
         return;
     }
