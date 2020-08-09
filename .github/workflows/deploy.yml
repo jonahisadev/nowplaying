@@ -1,0 +1,48 @@
+name: Node CI
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Install dependencies
+      run: npm install
+    - name: Run build
+      run: npm run build --if-present
+    - name: Deploy to VPS
+      uses: easingthemes/ssh-deploy@v2.0.7
+      env:
+        ARGS: "-rltgoDzvO --delete --exclude=.git --exclude=node_modules --rsync-path='sudo rsync'"
+        # Private Key
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        # Remote host
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        # Remote user
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        # Source directory
+        SOURCE: "./"
+        # Target directory
+        TARGET: "/home/bitnami/stack/apps/main/htdocs"
+    - name: Restart the server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/bitnami/stack/apps/main/htdocs/
+          sudo chown -R ${{secrets.REMOTE_USER}}:${{secrets.REMOTE_USER}} .
+          forever stop index.js
+          sudo npm i
+          forever start index.js
