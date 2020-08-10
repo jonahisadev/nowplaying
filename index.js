@@ -25,7 +25,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true,
     cookie: {
-        expires: new Date(Date.now() + (1000 * 60 * 60))
+        maxAge: 1000 * 60 * 60
     },
     store: new MongoStore({mongooseConnection: db.connection})
 }));
@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get('/', (req, res) => {
-    if (req.session['login']) {
+    if (req.session['login_user']) {
         res.redirect('/dashboard');
         return;
     }
@@ -67,7 +67,6 @@ app.get('/callback', async (req, res) => {
         user.sp_expires = new Date(Date.now() + tokens.expires * 1000);
         
         user.save({}).then(_ => {
-            req.session['login'] = true;
             req.session['login_user'] = user;
             console.log(req.session);
             res.redirect('/dashboard');
@@ -76,7 +75,7 @@ app.get('/callback', async (req, res) => {
 });
 
 app.get('/dashboard', async (req, res) => {
-    if (!req.session['login']) {
+    if (!req.session['login_user']) {
         res.redirect('/');
         return;
     }
